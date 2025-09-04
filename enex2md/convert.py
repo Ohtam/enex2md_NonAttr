@@ -48,13 +48,31 @@ class Converter(object):
             note_count += 1
             keys = {}
             keys['title'] = note.xpath('title')[0].text
-            keys['created'] = f"{parse(note.xpath('created')[0].text).strftime(self.date_format)} GMT"
-            if note.xpath('updated'):
-                keys['updated'] = f"{parse(note.xpath('updated')[0].text).strftime(self.date_format)} GMT"
-            if note.xpath('note-attributes/author'):
-                keys['author'] = note.xpath('note-attributes/author')[0].text
-            if note.xpath('note-attributes/source-url'):
-                keys['source_url'] = note.xpath('note-attributes/source-url')[0].text
+            
+            # created要素の存在チェックを追加
+            created_elements = note.xpath('created')
+            if created_elements:
+                keys['created'] = f"{parse(created_elements[0].text).strftime(self.date_format)} GMT"
+            else:
+                # created要素がない場合は現在時刻を使用
+                keys['created'] = f"{datetime.datetime.now().strftime(self.date_format)} GMT"
+                print(f"Warning: Note '{keys['title']}' has no created date. Using current time.")
+            
+            # updated要素のチェック
+            updated_elements = note.xpath('updated')
+            if updated_elements:
+                keys['updated'] = f"{parse(updated_elements[0].text).strftime(self.date_format)} GMT"
+            
+            # author要素のチェック
+            author_elements = note.xpath('note-attributes/author')
+            if author_elements:
+                keys['author'] = author_elements[0].text
+            
+            # source-url要素のチェック
+            source_url_elements = note.xpath('note-attributes/source-url')
+            if source_url_elements:
+                keys['source_url'] = source_url_elements[0].text
+                
             keys['tags'] = [tag.text for tag in note.xpath('tag')]
             keys['tags_string'] = ", ".join(tag for tag in keys['tags'])
 
@@ -122,9 +140,9 @@ class Converter(object):
         <div><br /></div>
         <div># One line comment.</div>
         <div><br /></div>
-        <div>“”” A block comment</div>
-        <div>    containing two lines.</div>
-        <div>“”"</div>
+        <div>â€œâ€â€ A block comment</div>
+        <div>Â  Â  containing two lines.</div>
+        <div>â€œâ€"</div>
         <div><br /></div>
         <div>print(my data)</div>
         </div>
@@ -139,8 +157,8 @@ class Converter(object):
             code += 'code-end-code-end-code-end'
 
             # Fix the duoblequotes
-            code = code.replace('“', '"')
-            code = code.replace('”', '"')
+            code = code.replace('â€œ', '"')
+            code = code.replace('â€', '"')
 
             new_block = soup.new_tag('pre')
             new_block.string = code

@@ -7,6 +7,8 @@
 [![license](https://img.shields.io/github/license/janikarh/enex2md.svg?style=flat)](https://github.com/janikarh/enex2md/blob/master/LICENSE)
 
 Enex2md is a command-line utility to convert Evernote export files (`*.enex`) to [GitHub Flavored Markdown](https://github.github.com/gfm/). *Python 3.6+ only!*
+ノートの属性なし対応版：Python3.13、Evernote 10.125.5(20250205150521)で確認。
+
 
 **NOTE: THIS PROJECT IS PRACTICALLY IN ARCHIVE MODE, AND WILL NOT BE UPDATED.**
 
